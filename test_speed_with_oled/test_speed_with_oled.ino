@@ -10,6 +10,7 @@
 
 const char* ssid     = "Fiki Fahrizal";
 const char* password = "16091996";
+const char* host="192.168.100.8";
 
 const char* remote_host = "www.google.com";
 
@@ -53,6 +54,19 @@ void loop() {
     lcd.display();
     delay(200);
     lcd.clear();
+
+
+    Serial.print("connecting to ");
+    Serial.println(host);
+  
+    WiFiClient client;
+    const int httpPort = 80;
+    if (!client.connect(host, httpPort)) {
+    Serial.println("connection failed");
+    return;
+    }
+
+
     
     if(Ping.ping(remote_host)) 
     {
@@ -61,9 +75,9 @@ void loop() {
     avg_time_ms = Ping.averageTime(); // reading string and Int for easy display integration.
     Serial.println(i);
 
-  if (i < 99)  // It is in general term, Please change as per your requirement
+  if (i < 99)
  {
-  Serial.println("GOOD"); 
+  Serial.println("GOOD");
   lcd.setCursor(0,0);
   lcd.print("pingtime");
   lcd.setCursor(10,0);
@@ -75,7 +89,7 @@ void loop() {
   lcd.setCursor(0,3);
   lcd.print("Good");
  }
-  if (i > 100 && i < 199)  // It is in general term, Please change as per your requirement
+  if (i > 100 && i < 199)
  {
   Serial.println("bad"); 
   lcd.setCursor(0,0);
@@ -97,7 +111,41 @@ void loop() {
     lcd.setCursor(0,2);
     lcd.print("Offline");
     }
+
   
-  delay(60000);  // Every minutes
+ 
+  String url = "/wifi/add.php?";
+  url += "pingtime=";
+  url +=i ;
+ 
+  Serial.print("Requesting URL: ");
+  Serial.println(url);
+ 
+  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" +
+               "Connection: close\r\n\r\n");
+ 
+  unsigned long timeout = millis();
+  while (client.available() == 0) {
+    if (millis() - timeout > 5000) {
+      Serial.println(">>> Client Timeout !");
+      client.stop();
+      return;
+    }
+  }
+ 
+  // Read all the lines of the reply from server and print them to Serial
+  while (client.available()) {
+    String line = client.readStringUntil('\r');
+    if (line.indexOf("sukses gaes") != -1) {
+      Serial.println("Yes, data masuk");
+    } else if (line.indexOf("gagal gaes") != -1) {
+      Serial.println("Maaf, data gagal masuk");
+      
+    }
+  }
+  Serial.println("closing connection");
+  
+  delay(10000);  // Every minutes
   lcd.clear();
 }
