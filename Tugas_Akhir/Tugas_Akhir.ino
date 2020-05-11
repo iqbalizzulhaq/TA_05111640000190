@@ -25,6 +25,9 @@ LiquidCrystal_I2C lcd(0x27,2,1,0,4,5,6,7);
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
+  lcd.begin (20,4); 
+  lcd.setBacklightPin(3,POSITIVE);
+  lcd.setBacklight(HIGH);
   connectWiFi();
 
 }
@@ -248,6 +251,50 @@ void downloadAndSaveFile(String fileName, String  url){
     }
   }
 
+  
+  }
+
+void lcdDisplay(){
+  lcd.setCursor ( 0, 0 );
+  lcd.print("Connecting to Wifi");
+  lcd.setCursor (0,1);
+  lcd.print(WiFi.SSID());
+  lcd.setCursor(0,2);
+  lcd.print(WiFi.localIP());
+  lcd.clear();
+
+  if (averagePingtime < 99){
+    lcd.setCursor(0,0);
+    lcd.print("pingtime");
+    lcd.setCursor(10,0);
+    lcd.print(rssi);
+    lcd.setCursor(0,1);
+    lcd.print(averagePingtime+"ms");
+    lcd.setCursor(0,2);
+    lcd.print("Internet condition");
+    lcd.setCursor(0,3);
+    lcd.print("Good");
+
+    }
+  if (averagePingtime > 100 && averagePingtime < 199)
+ {
+  Serial.println("bad"); 
+  lcd.setCursor(0,0);
+  lcd.print("pingtime");
+  lcd.setCursor(0,1);
+  lcd.print(averagePingtime+"ms");
+  lcd.setCursor(0,2);
+  lcd.print("Internet condition");
+  lcd.setCursor(0,3);
+  lcd.print("Bad");
+ }
+  else
+  {
+    lcd.setCursor(0,1);
+    lcd.print("Internet condition");
+    lcd.setCursor(0,2);
+    lcd.print("Offline");
+    }
   
   }
 
