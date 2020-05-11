@@ -1,4 +1,3 @@
-
 #include <LCD.h>
 #include <LiquidCrystal.h>
 #include <LiquidCrystal_I2C.h>
@@ -8,16 +7,18 @@
 #include <ESP8266Ping.h>
 
 
-const char* ssid     = "Fiki Fahrizal";
-const char* password = "16091996";
-const char* host="192.168.100.8";
+const char* ssid      = "Fiki Fahrizal";
+const char* password  = "16091996";
+const char* host      = "192.168.100.8";// localhost 
 
 const char* remote_host = "www.google.com";
 
 LiquidCrystal_I2C lcd(0x27,2,1,0,4,5,6,7);
 
 String avg_time_ms;
-int i;
+String max_time_ms;
+String min_time_ms;
+int i,r,s;
 
 void setup() {
   Serial.begin(115200);
@@ -28,6 +29,7 @@ void setup() {
   
   Serial.println();
   Serial.println("Connecting to WiFi");
+  //Serial.println(ESP.getCpuFreqMHz());
   lcd.setCursor ( 0, 0 );
   lcd.print("Connecting to Wifi"); 
   WiFi.begin(ssid, password);
@@ -40,6 +42,7 @@ void setup() {
   lcd.setCursor (0,1);
   lcd.print(WiFi.SSID());
   Serial.println(WiFi.localIP());
+//  Serial.println(WiFi.RSSI(network));
   lcd.setCursor(0,2);
   lcd.print(WiFi.localIP());
   Serial.print("Pinging host ");
@@ -73,7 +76,13 @@ void loop() {
     Ping.ping(remote_host, 10);  //10 time ping to google, You can change value to higher or lower
     i= Ping.averageTime();
     avg_time_ms = Ping.averageTime(); // reading string and Int for easy display integration.
+    r=Ping.maxTime();
+    max_time_ms= Ping.maxTime();
+    s=Ping.minTime();
+    min_time_ms=Ping.minTime();
     Serial.println(i);
+    Serial.println(r);
+    Serial.println(s);
 
   if (i < 99)
  {
