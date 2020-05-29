@@ -25,6 +25,12 @@ if (isset($_GET['averagePingtime'])){
 else{
 	echo "Data not received1";
 }
+if (isset($_GET['location'])){
+	$location= $_GET['location'];
+}
+else{
+	echo "Data not received6";
+}
 
 if (isset($_GET['maxPingtime'])){
 	$maxPingtime = $_GET['maxPingtime'];
@@ -60,7 +66,8 @@ else
 
 
 //Insert into database
-$data_sql = "INSERT INTO logs (id, averagePingtime ,maxPingtime,minPingtime,throughput,kategori, timestamp) VALUES ('NULL', '$averagePingtime', '$maxPingtime','$minPingtime','$throughput','$kategori', NOW());";
+$data_sql = "INSERT INTO logs (id, location, averagePingtime ,maxPingtime,minPingtime,throughput,kategori, timestamp) 
+VALUES ('NULL','$location', '$averagePingtime', '$maxPingtime','$minPingtime','$throughput','$kategori', NOW());";
 $stmt=mysqli_query($conn, $data_sql);
 
 //$device_list = array(); 

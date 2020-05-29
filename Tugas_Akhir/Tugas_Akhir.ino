@@ -18,6 +18,7 @@ const char* remote_host = "www.google.com";
 int averagePingtime,maxPingtime,minPingtime;
 float throughput;
 String kategori="";
+String location;
 
 LiquidCrystal_I2C lcd(0x27,2,1,0,4,5,6,7);
 
@@ -61,6 +62,9 @@ void getPingtime(){
   String min_time_ms;
   
 
+  location =WiFi.RSSI();
+  
+
   if(Ping.ping(remote_host)) 
     {
     Ping.ping(remote_host, 10);  //10 time ping to google, You can change value to higher or lower
@@ -80,23 +84,24 @@ void getPingtime(){
 
     
     if (averagePingtime <99){
-     kategori="Internet_Condition_Good";
+     kategori="Good";
      Serial.println(kategori); 
      Serial.println("------------------------");
     }
     if (averagePingtime > 100 && averagePingtime < 199){
-      kategori="Internet_Condition_Bad";
+      kategori="Bad";
       Serial.println(kategori);
       Serial.println("------------------------");
     }
     }
   else{
-    Serial.println("Internet_offline");
+    kategori = "offline";
+    Serial.println("Offline");
   }  
   }
 
 void downloadAndSaveFile(String fileName, String  url){
- 
+ Serial.println(location);
   HTTPClient http;
 
   
@@ -217,6 +222,8 @@ void downloadAndSaveFile(String fileName, String  url){
     Serial.println("Connected to local host ");
     request_string +=" /Tugas_Akhir/try.php?averagePingtime=";
     request_string +=averagePingtime;
+    request_string +="&location=";
+    request_string += location;
     request_string +="&maxPingtime=";
     request_string += maxPingtime;
     request_string +="&minPingtime=";
@@ -231,7 +238,7 @@ void downloadAndSaveFile(String fileName, String  url){
     Serial.println(request_string);
     Serial.println("--------------------------");
     
-    client.print(String("GET") + request_string +
+    client.print(String("GET") + request_string +"\r\n"+
     "HTTP/1.1\r\n" + "Host: " 
     +host + "\r\n" + "Connection: close \r\n\r\n");
     
@@ -254,48 +261,48 @@ void downloadAndSaveFile(String fileName, String  url){
   
   }
 
-void lcdDisplay(){
-  lcd.setCursor ( 0, 0 );
-  lcd.print("Connecting to Wifi");
-  lcd.setCursor (0,1);
-  lcd.print(WiFi.SSID());
-  lcd.setCursor(0,2);
-  lcd.print(WiFi.localIP());
-  lcd.clear();
+//void lcdDisplay(){
+//  lcd.setCursor ( 0, 0 );
+//  lcd.print("Connecting to Wifi");
+//  lcd.setCursor (0,1);
+//  lcd.print(WiFi.SSID());
+//  lcd.setCursor(0,2);
+//  lcd.print(WiFi.localIP());
+//  lcd.clear();
 
-  if (averagePingtime < 99){
-    lcd.setCursor(0,0);
-    lcd.print("pingtime");
-    lcd.setCursor(10,0);
-    lcd.print(rssi);
-    lcd.setCursor(0,1);
-    lcd.print(averagePingtime+"ms");
-    lcd.setCursor(0,2);
-    lcd.print("Internet condition");
-    lcd.setCursor(0,3);
-    lcd.print("Good");
-
-    }
-  if (averagePingtime > 100 && averagePingtime < 199)
- {
-  Serial.println("bad"); 
-  lcd.setCursor(0,0);
-  lcd.print("pingtime");
-  lcd.setCursor(0,1);
-  lcd.print(averagePingtime+"ms");
-  lcd.setCursor(0,2);
-  lcd.print("Internet condition");
-  lcd.setCursor(0,3);
-  lcd.print("Bad");
- }
-  else
-  {
-    lcd.setCursor(0,1);
-    lcd.print("Internet condition");
-    lcd.setCursor(0,2);
-    lcd.print("Offline");
-    }
-  
-  }
+//  if (averagePingtime < 99){
+//    lcd.setCursor(0,0);
+//    lcd.print("pingtime");
+//    lcd.setCursor(10,0);
+//    lcd.print(rssi);
+//    lcd.setCursor(0,1);
+//    lcd.print(averagePingtime+"ms");
+//    lcd.setCursor(0,2);
+//    lcd.print("Internet condition");
+//    lcd.setCursor(0,3);
+//    lcd.print("Good");
+//
+//    }
+//  if (averagePingtime > 100 && averagePingtime < 199)
+// {
+//  Serial.println("bad"); 
+//  lcd.setCursor(0,0);
+//  lcd.print("pingtime");
+//  lcd.setCursor(0,1);
+//  lcd.print(averagePingtime+"ms");
+//  lcd.setCursor(0,2);
+//  lcd.print("Internet condition");
+//  lcd.setCursor(0,3);
+//  lcd.print("Bad");
+// }
+//  else
+//  {
+//    lcd.setCursor(0,1);
+//    lcd.print("Internet condition");
+//    lcd.setCursor(0,2);
+//    lcd.print("Offline");
+//    }
+//  
+//  }
 
  
